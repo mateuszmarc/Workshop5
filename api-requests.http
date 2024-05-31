@@ -1,6 +1,30 @@
 ### Test Tomcat server configuration
 GET http://localhost:8080/books/helloBook
 
+### Add book(correct request)
+POST http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "isbn": "34321",
+  "title": "Thinking in Java",
+  "publisher":"Helion",
+  "type":"programming",
+  "author":"Bruce Eckel"
+}
+
+### Add book(incorrect request - lack of author key - value pair)
+POST http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "isbn": "34321",
+  "title": "Thinking in Java",
+  "publisher":"Helion",
+  "type":"programming"
+}
+
+
 ### Get all books
 GET http://localhost:8080/books
 
