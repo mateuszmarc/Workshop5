@@ -98,4 +98,16 @@ public class BookController {
                 || book.getPublisher() == null
                 || book.getTitle() == null;
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseMessage> deleteBook(@PathVariable long id) {
+        Optional<Book> optionalBook = mockBookService.get(id);
+
+        if (optionalBook.isPresent()) {
+            mockBookService.delete(id);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseSuccessMessage("Book with id: '%s' deleted successfully"));
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseErrorMessage("Book with id: '%s' not found".formatted(id)));
+    }
 }

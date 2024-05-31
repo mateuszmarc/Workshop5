@@ -72,3 +72,6 @@ GET http://localhost:8080/books/1
 
 ### Get book by id(404 response)
 GET http://localhost:8080/books/0
+
+### Delete book
+DELETE http://localhost:8080/books/1
