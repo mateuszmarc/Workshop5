@@ -1,0 +1,6 @@
+### Test Tomcat server configuration
+GET http://localhost:8080/books/helloBook
+
+### Get all books
+GET http://localhost:8080/books
+
