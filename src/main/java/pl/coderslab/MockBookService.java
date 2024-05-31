@@ -2,6 +2,7 @@ package pl.coderslab;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 @Getter
 @Setter
+@Component
 public class MockBookService implements BookService {
 
     private static Long nextId = 4L;
@@ -26,26 +28,38 @@ public class MockBookService implements BookService {
 
     @Override
     public List<Book> getBooks() {
-        return List.of();
+        return books;
     }
 
     @Override
     public Optional<Book> get(Long id) {
-        return Optional.empty();
+        return books.stream().filter(book -> book.getId().equals(id)).findFirst();
     }
 
     @Override
     public void add(Book book) {
-
+        nextId++;
+        book.setId(nextId);
+        books.add(book);
     }
 
     @Override
     public void delete(Long id) {
-
+        books.removeIf(book -> book.getId().equals(id));
     }
 
     @Override
     public void update(Book book) {
+         Optional<Book> optionalBook = get(book.getId());
+        optionalBook.ifPresent(book1 -> updateBook(book, book1));
+    }
+
+    private static void updateBook(Book sourceBook, Book destinationBook) {
+            destinationBook.setIsbn(sourceBook.getIsbn());
+            destinationBook.setType(sourceBook.getType());
+            destinationBook.setTitle(sourceBook.getTitle());
+            destinationBook.setAuthor(sourceBook.getAuthor());
+            destinationBook.setPublisher(sourceBook.getPublisher());
 
     }
 }
