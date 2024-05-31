@@ -47,7 +47,7 @@ public class BookController {
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
         log.info("{}", book);
 
-        if (checkRequestBody(book)) {
+        if (doesBookToAddContainNullValues(book)) {
             mockBookService.add(book);
             return ResponseEntity.ok(book);
         }
@@ -60,7 +60,7 @@ public class BookController {
         return ResponseEntity.badRequest().build();
     }
 
-    private boolean checkRequestBody(Book book) {
+    private boolean doesBookToAddContainNullValues(Book book) {
         return book.getIsbn() != null
                 && book.getAuthor() != null
                 && book.getType() != null
