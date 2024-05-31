@@ -1,5 +1,6 @@
 package pl.coderslab;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,9 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> readAllBooks() {
-        return mockBookService.getBooks();
+    public ResponseEntity<List<Book>> readAllBooks() {
+        List<Book> books = mockBookService.getBooks();
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
 
