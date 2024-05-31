@@ -24,6 +24,45 @@ Content-Type: application/json
   "type":"programming"
 }
 
+### Update book (correct body)
+PUT http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "id": 1,
+  "isbn": "32222",
+  "title": "Thinking in C#",
+  "publisher": "IT Books",
+  "type": "programming",
+  "author":"Bruce Eckel"
+}
+
+### Update book (incorrect body)
+PUT http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "id": 1,
+  "isbn": "32222",
+  "title": "Thinking in C#",
+  "publisher": "IT Books",
+  "type": "programming"
+}
+
+
+### Update book (id not in database)
+PUT http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "id": 1000,
+  "isbn": "32222",
+  "title": "Thinking in C#",
+  "publisher": "IT Books",
+  "type": "programming",
+  "author":"Bruce Eckel"
+}
+
 
 ### Get all books
 GET http://localhost:8080/books
