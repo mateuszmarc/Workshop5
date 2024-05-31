@@ -67,4 +67,35 @@ public class BookController {
                 && book.getPublisher() != null
                 && book.getTitle() != null;
     }
+
+    @PutMapping
+    public ResponseEntity<Book> updateBook(@RequestBody Book book) {
+        Optional<Book> optionalBook = mockBookService.get(book.getId());
+
+        if (optionalBook.isEmpty()) {
+            return getBookNotFoundErrorMessage(book.getId());
+        }
+
+        if (doesBookToUpdateContainNullValues(book)) {
+            return getBadRequestForBookUpdateError();
+        }
+
+        mockBookService.update(book);
+        return ResponseEntity.ok(book);
+
+    }
+
+    private static ResponseEntity<Book> getBadRequestForBookUpdateError() {
+        log.info("All fields of book instance must be populated to update book to the list");
+        return ResponseEntity.badRequest().build();
+    }
+
+    private boolean doesBookToUpdateContainNullValues(Book book) {
+        return book.getId() == null
+                || book.getIsbn() == null
+                || book.getAuthor() == null
+                || book.getType() == null
+                || book.getPublisher() == null
+                || book.getTitle() == null;
+    }
 }
