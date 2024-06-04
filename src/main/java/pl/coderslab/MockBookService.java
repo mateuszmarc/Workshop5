@@ -51,15 +51,7 @@ public class MockBookService implements BookService {
     @Override
     public void update(Book book) {
          Optional<Book> optionalBook = get(book.getId());
-        optionalBook.ifPresent(book1 -> updateBook(book, book1));
+        optionalBook.ifPresent(foundBook -> foundBook.updateBook(book));
     }
 
-    private static void updateBook(Book sourceBook, Book destinationBook) {
-            destinationBook.setIsbn(sourceBook.getIsbn());
-            destinationBook.setType(sourceBook.getType());
-            destinationBook.setTitle(sourceBook.getTitle());
-            destinationBook.setAuthor(sourceBook.getAuthor());
-            destinationBook.setPublisher(sourceBook.getPublisher());
-
-    }
 }
