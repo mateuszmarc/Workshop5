@@ -29,4 +29,12 @@ public class Book {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+    
+    public void updateBook(Book bookNewData) {
+        this.setIsbn(bookNewData.getIsbn());
+        this.setType(bookNewData.getType());
+        this.setTitle(bookNewData.getTitle());
+        this.setAuthor(bookNewData.getAuthor());
+        this.setPublisher(bookNewData.getPublisher());
+    }
 }
