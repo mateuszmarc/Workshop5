@@ -80,7 +80,10 @@ public class BookController {
             return getBookBadRequestStatusResponse(ResponseMessage.NOT_ENOUGH_DATA_TO_UPDATE_BOOK_MESSAGE);
         }
 
-        return optionalBook.map(foundBook -> getBookStatusSuccessResponse(foundBook, ResponseMessage.BOOK_UPDATED_SUCCESS_MESSAGE))
+        return optionalBook.map(foundBook -> {
+                    mockBookService.update(book);
+                    return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_UPDATED_SUCCESS_MESSAGE);
+                })
                 .orElseGet(() -> getBookNotFoundResponse(book.getId()));
 
     }
