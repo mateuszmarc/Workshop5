@@ -75,3 +75,7 @@ GET http://localhost:8080/books/0
 
 ### Delete book
 DELETE http://localhost:8080/books/1
+
+
+### Delete book(id not in database)
+DELETE http://localhost:8080/books/1000

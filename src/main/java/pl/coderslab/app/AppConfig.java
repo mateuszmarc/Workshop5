@@ -1,5 +1,6 @@
 package pl.coderslab.app;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import pl.coderslab.httpResponses.ResponseMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -35,5 +37,10 @@ public class AppConfig implements WebMvcConfigurer {
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
+    }
+
+    @Bean
+    public ResponseMessage responseMessage() {
+        return new ResponseMessage();
     }
 }
