@@ -15,7 +15,7 @@ public class CustomRequestExceptionHandler {
     @ExceptionHandler({HttpMessageNotReadableException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<BookErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        String errorMessage = "Invalid input: " + extractMessage(ex);
+        String errorMessage = "Invalid input. " + extractMessage(ex);
         BookErrorResponse errorResponse = new BookErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -23,7 +23,7 @@ public class CustomRequestExceptionHandler {
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<BookErrorResponse> handleHttpMessageNotReadableException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<BookErrorResponse> handleHttpMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         String errorMessage = "Invalid path variable type: " + extractMessage(ex);
         BookErrorResponse errorResponse = new BookErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -50,7 +50,7 @@ public class CustomRequestExceptionHandler {
     private String extractMessage(IncompleteRequestBodyException ex) {
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException) {
-            return "Cannot deserialize value: " + cause.getMessage();
+            return "Incomplete body request: " + cause.getMessage();
         }
         return ex.getMessage();
     }
@@ -58,7 +58,7 @@ public class CustomRequestExceptionHandler {
     private String extractMessage(HttpMessageNotReadableException ex) {
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException) {
-            return "Cannot deserialize value: " + cause.getMessage();
+            return "Cannot deserialize value: One of request body fields has wrong type.";
         }
         return ex.getMessage();
     }

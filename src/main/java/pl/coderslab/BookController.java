@@ -19,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
+
     private final MockBookService mockBookService;
 
     private static void throwIncompleteRequestBodyException() {
@@ -38,11 +39,11 @@ public class BookController {
                 "Bruce Eckel", "Helion", "programming");
         log.info("{}", book);
 
-        return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE);
+        return getBookStatusSuccessResponse(HttpStatus.CREATED, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE, book);
     }
 
-    private ResponseEntity<BookOkResponseStatusWrapper> getBookStatusSuccessResponse(Book book, String message) {
-        BookOkResponseStatusWrapper bookOkResponseStatusWrapper = new BookOkResponseStatusWrapper(book, message);
+    private ResponseEntity<BookOkResponseStatusWrapper> getBookStatusSuccessResponse(HttpStatus httpStatus, String message, Book book) {
+        BookOkResponseStatusWrapper bookOkResponseStatusWrapper = new BookOkResponseStatusWrapper(httpStatus.value(), message, book);
 
         return ResponseEntity.status(HttpStatus.OK).body(bookOkResponseStatusWrapper);
     }
@@ -66,7 +67,7 @@ public class BookController {
             throwBookNotFoundException(id);
         }
 
-        return getBookStatusSuccessResponse(optionalBook.get(), ResponseMessage.BOOK_RETRIEVED_SUCCESS_MESSAGE);
+        return getBookStatusSuccessResponse(HttpStatus.OK, ResponseMessage.BOOK_RETRIEVED_SUCCESS_MESSAGE, optionalBook.get());
     }
 
 
@@ -79,7 +80,7 @@ public class BookController {
         }
 
         mockBookService.add(book);
-        return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE);
+        return getBookStatusSuccessResponse(HttpStatus.CREATED, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE, book);
 
     }
 
@@ -105,7 +106,7 @@ public class BookController {
             throwBookNotFoundException(book.getId());
         }
 
-        return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_UPDATED_SUCCESS_MESSAGE);
+        return getBookStatusSuccessResponse(HttpStatus.OK, ResponseMessage.BOOK_UPDATED_SUCCESS_MESSAGE, book);
 
     }
 
@@ -129,7 +130,7 @@ public class BookController {
         }
 
         mockBookService.delete(id);
-        return getBookStatusSuccessResponse(optionalBook.get(), ResponseMessage.BOOK_DELETED_SUCCESS_MESSAGE);
+        return getBookStatusSuccessResponse(HttpStatus.OK, ResponseMessage.BOOK_DELETED_SUCCESS_MESSAGE, optionalBook.get());
     }
 
 
