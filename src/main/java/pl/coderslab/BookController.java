@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.coderslab.httpResponses.BookGetAllBooksSuccessWrapper;
-import pl.coderslab.httpResponses.BookResponseStatusWrapper;
+import pl.coderslab.httpResponses.BookGetAllBooksOkResponseStatusWrapper;
+import pl.coderslab.httpResponses.BookOkResponseStatusWrapper;
 import pl.coderslab.httpResponses.ResponseMessage;
+import pl.coderslab.httpResponses.customExceptions.BookNotFoundException;
+import pl.coderslab.httpResponses.customExceptions.IncompleteRequestBodyException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +21,18 @@ import java.util.Optional;
 public class BookController {
     private final MockBookService mockBookService;
 
+    private static void throwIncompleteRequestBodyException() {
+        throw new IncompleteRequestBodyException("Request body is missing values for book data fields");
+    }
+
+    private static void throwBookNotFoundException(long id) {
+        throw new BookNotFoundException("Book with id:%s not found".formatted(id));
+    }
+
+
+
     @RequestMapping("/helloBook")
-    public ResponseEntity<BookResponseStatusWrapper> helloBook() {
+    public ResponseEntity<BookOkResponseStatusWrapper> helloBook() {
 
         Book book =  new Book(1L, "9788324631766", "Thinking in Java",
                 "Bruce Eckel", "Helion", "programming");
@@ -29,37 +41,46 @@ public class BookController {
         return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE);
     }
 
+    private ResponseEntity<BookOkResponseStatusWrapper> getBookStatusSuccessResponse(Book book, String message) {
+        BookOkResponseStatusWrapper bookOkResponseStatusWrapper = new BookOkResponseStatusWrapper(book, message);
+
+        return ResponseEntity.status(HttpStatus.OK).body(bookOkResponseStatusWrapper);
+    }
+
 
     @GetMapping
-    public ResponseEntity<BookGetAllBooksSuccessWrapper> readAllBooks() {
+    public ResponseEntity<BookGetAllBooksOkResponseStatusWrapper> readAllBooks() {
         List<Book> books = mockBookService.getBooks();
 
-        BookGetAllBooksSuccessWrapper bookGetAllBooksSuccessWrapper = new BookGetAllBooksSuccessWrapper(ResponseMessage.BOOKS_RETRIEVED_SUCCESS_MESSAGE, books);
+        BookGetAllBooksOkResponseStatusWrapper bookGetAllBooksOkResponseStatusWrapper = new BookGetAllBooksOkResponseStatusWrapper(ResponseMessage.BOOKS_RETRIEVED_SUCCESS_MESSAGE, books);
 
-        return ResponseEntity.ok(bookGetAllBooksSuccessWrapper);
+        return ResponseEntity.ok(bookGetAllBooksOkResponseStatusWrapper);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookResponseStatusWrapper> findBookById(@PathVariable long id) {
+    public ResponseEntity<BookOkResponseStatusWrapper> findBookById(@PathVariable long id) {
         Optional<Book> optionalBook = mockBookService.get(id);
 
-        return optionalBook.map(book -> getBookStatusSuccessResponse(book, ResponseMessage.BOOK_RETRIEVED_SUCCESS_MESSAGE))
-                .orElseGet(() -> getBookNotFoundResponse(id));
+        if (optionalBook.isEmpty()) {
+            throwBookNotFoundException(id);
+        }
 
+        return getBookStatusSuccessResponse(optionalBook.get(), ResponseMessage.BOOK_RETRIEVED_SUCCESS_MESSAGE);
     }
 
 
     @PostMapping
-    public ResponseEntity<BookResponseStatusWrapper> addBook(@RequestBody Book book) {
+    public ResponseEntity<BookOkResponseStatusWrapper> addBook(@RequestBody Book book) {
         log.info("{}", book);
 
-        if (!doesBookToAddContainNullValues(book)) {
-            mockBookService.add(book);
-            return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE);
+        if (doesBookToAddContainNullValues(book)) {
+            throwIncompleteRequestBodyException();
         }
 
-        return getBookBadRequestStatusResponse(ResponseMessage.NOT_ENOUGH_DATA_TO_SAVE_BOOK_MESSAGE);
+        mockBookService.add(book);
+        return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_ADDED_SUCCESS_MESSAGE);
+
     }
 
 
@@ -73,15 +94,18 @@ public class BookController {
 
 
     @PutMapping
-    public ResponseEntity<BookResponseStatusWrapper> updateBook(@RequestBody Book book) {
+    public ResponseEntity<BookOkResponseStatusWrapper> updateBook(@RequestBody Book book) {
         Optional<Book> optionalBook = mockBookService.get(book.getId());
 
         if (doesBookToUpdateContainNullValues(book)) {
-            return getBookBadRequestStatusResponse(ResponseMessage.NOT_ENOUGH_DATA_TO_UPDATE_BOOK_MESSAGE);
+            throwIncompleteRequestBodyException();
         }
 
-        return optionalBook.map(foundBook -> getBookStatusSuccessResponse(foundBook, ResponseMessage.BOOK_UPDATED_SUCCESS_MESSAGE))
-                .orElseGet(() -> getBookNotFoundResponse(book.getId()));
+        if (optionalBook.isEmpty()) {
+            throwBookNotFoundException(book.getId());
+        }
+
+        return getBookStatusSuccessResponse(book, ResponseMessage.BOOK_UPDATED_SUCCESS_MESSAGE);
 
     }
 
@@ -97,35 +121,15 @@ public class BookController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BookResponseStatusWrapper> deleteBook(@PathVariable long id) {
+    public ResponseEntity<BookOkResponseStatusWrapper> deleteBook(@PathVariable long id) {
         Optional<Book> optionalBook = mockBookService.get(id);
 
-        return optionalBook.map(foundBook -> {
-                    mockBookService.delete(id);
-                    return getBookStatusSuccessResponse(foundBook, ResponseMessage.BOOK_DELETED_SUCCESS_MESSAGE);
-                })
-                .orElseGet(() -> getBookNotFoundResponse(id));
-    }
+        if (optionalBook.isEmpty()) {
+            throwBookNotFoundException(id);
+        }
 
-
-    private ResponseEntity<BookResponseStatusWrapper> getBookStatusSuccessResponse(Book book, String message) {
-        BookResponseStatusWrapper bookResponseStatusWrapper = new BookResponseStatusWrapper("Success", message, book);
-
-        return ResponseEntity.status(HttpStatus.OK)
-
-                .body(bookResponseStatusWrapper);
-    }
-
-    private ResponseEntity<BookResponseStatusWrapper> getBookNotFoundResponse(long id) {
-        BookResponseStatusWrapper bookResponseStatusWrapper = new BookResponseStatusWrapper("Failure", ResponseMessage.BOOK_NOT_FOUND_MESSAGE.formatted(id), null);
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(bookResponseStatusWrapper);
-    }
-
-    private ResponseEntity<BookResponseStatusWrapper> getBookBadRequestStatusResponse(String message) {
-        BookResponseStatusWrapper bookResponseStatusWrapper = new BookResponseStatusWrapper("Failure", message, null);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bookResponseStatusWrapper);
+        mockBookService.delete(id);
+        return getBookStatusSuccessResponse(optionalBook.get(), ResponseMessage.BOOK_DELETED_SUCCESS_MESSAGE);
     }
 
 
