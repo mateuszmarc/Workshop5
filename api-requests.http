@@ -37,7 +37,7 @@ Content-Type: application/json
   "author":"Bruce Eckel"
 }
 
-### Update book (incorrect body)
+### Update book (incorrect body - missing author field)
 PUT http://localhost:8080/books
 Content-Type: application/json
 
@@ -49,6 +49,18 @@ Content-Type: application/json
   "type": "programming"
 }
 
+### Update book (incorrect body - incorrect id type)
+PUT http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "id": "gg",
+  "isbn": "32222",
+  "title": "Thinking in C#",
+  "publisher": "IT Books",
+  "type": "programming",
+  "author":"Bruce Eckel"
+}
 
 ### Update book (id not in database)
 PUT http://localhost:8080/books
@@ -70,12 +82,17 @@ GET http://localhost:8080/books
 ### Get book by id
 GET http://localhost:8080/books/1
 
-### Get book by id(404 response)
+### Get book by id(incorrect id type provided)
+GET http://localhost:8080/books/gg
+
+### Get book by id(book not in book list)
 GET http://localhost:8080/books/0
 
 ### Delete book
 DELETE http://localhost:8080/books/1
 
+### Delete book(incorrect id type provided)
+DELETE http://localhost:8080/books/ggg
 
-### Delete book(id not in database)
+### Delete book(book not in book list)
 DELETE http://localhost:8080/books/1000
