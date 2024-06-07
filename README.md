@@ -109,7 +109,7 @@ You don't need much to use this api but below might help
 ## Usage
 Run Tomcat server to use api.
 
-See detailed api documentation click in the link: 
+To see detailed api documentation click in the link: 
 https://documenter.getpostman.com/view/27635486/2sA3XJjQCX
 
 
