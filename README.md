@@ -46,14 +46,8 @@
     </li>
     <li>
 <a href="#usage">Usage</a>
-      <ul>
-        <li><a href="#displaying-all-tasks">Retrieving all books</a></li>
-        <li><a href="#adding-the-task">Adding the book</a></li>
-        <li><a href="#closing-the-task">Updating the book</a></li>
-        <li><a href="#deleting-the-task">Deleting the book</a></li>
-      </ul>
+
 </li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
